@@ -22,7 +22,11 @@ const App = () => {
       )
       setContract(instance)
 
-      
+      const candidatesList = await instance.methods.getCandidates().Call()
+      setCandidates(candidatesList)
+      setLoading(false)
     }
+
+    
   })
 }
