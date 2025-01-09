@@ -37,4 +37,24 @@ const App = () => {
     setCandidates(updatedCandidates)
     setLoading(false)
   }
+
+  if (loading) return <div>Loading...</div>
+
+  return (
+    <div>
+      <h1>Decentralized Voting</h1>
+      <h2>Account: {account}</h2>
+      <h3>Candidates</h3>
+      <ul>
+        {candidates.map((candidates) => (
+          <li key={candidates.id}>
+            {candidates.name} - Votes: {candidates.voteCount}
+            <button onClick={() => vote(candidate.id)}>Vote</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
+
+export default App;
