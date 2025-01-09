@@ -27,6 +27,6 @@ const App = () => {
       setLoading(false)
     }
 
-    
-  })
+    loadingBlockchainData()
+  }, [])
 }
