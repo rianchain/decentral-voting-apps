@@ -29,4 +29,12 @@ const App = () => {
 
     loadingBlockchainData()
   }, [])
+
+  const vote = async (candidateId) => {
+    setLoading(true)
+    await contract.methods.vote(candidateId).send({ from: account })
+    const updatedCandidates = await contract.methods.getCandidates().call()
+    setCandidates(updatedCandidates)
+    setLoading(false)
+  }
 }
