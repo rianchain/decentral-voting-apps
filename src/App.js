@@ -14,6 +14,14 @@ const App = () => {
       const accounts = await web3.eth.requestAccounts()
       setAccount(accounts[0])
 
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = VotingContract.networks[networkId]
+      const instance = new web3.eth.Contract(
+        VotingContract.abi,
+        deployedNetwork && deployedNetwork.address,
+      )
+      setContract(instance)
+
       
     }
   })
