@@ -46,7 +46,7 @@ const App = () => {
       <h2>Account: {account}</h2>
       <h3>Candidates</h3>
       <ul>
-        {candidates.map((candidates) => (
+        {candidates.map((candidate) => (
           <li key={candidates.id}>
             {candidates.name} - Votes: {candidates.voteCount}
             <button onClick={() => vote(candidate.id)}>Vote</button>
