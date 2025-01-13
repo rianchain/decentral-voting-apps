@@ -3,6 +3,7 @@ import Web3 from "web3";
 import { VotingContractABI } from "./abis/VotingContract";
 import "./App.css";
 import { CONTRACT_ADDRESS, NETWORK_ID } from "./config";
+import Login from "./components/Login";
 
 const App = () => {
   const [account, setAccount] = useState("");
@@ -12,14 +13,82 @@ const App = () => {
   const [error, setError] = useState("");
   const [newCandidateName, setNewCandidateName] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("");
+  const [isConnected, setIsConnected] = useState(false);
+
+  const connectWallet = async () => {
+    try {
+      if (!window.ethereum) {
+        throw new Error("MetaMask tidak terdeteksi! Silakan install MetaMask.");
+      }
+
+      setLoading(true);
+      const web3 = new Web3(window.ethereum);
+      const accounts = await web3.eth.requestAccounts();
+
+      if (accounts.length === 0) {
+        throw new Error("Tidak ada akun yang terdeteksi!");
+      }
+
+      const networkId = await web3.eth.net.getId();
+      if (networkId.toString() !== NETWORK_ID) {
+        throw new Error(
+          `Silakan hubungkan ke jaringan yang benar (Network ID: ${NETWORK_ID})`
+        );
+      }
+
+      setAccount(accounts[0]);
+      setIsConnected(true);
+      await loadBlockchainData();
+    } catch (err) {
+      console.error("Error:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    loadBlockchainData();
-    // Refresh data setiap 30 detik
-    const interval = setInterval(() => {
-      loadBlockchainData();
-    }, 30000);
-    return () => clearInterval(interval);
+    // Cek status koneksi saat aplikasi dimuat
+    const checkConnection = async () => {
+      if (window.ethereum) {
+        try {
+          const web3 = new Web3(window.ethereum);
+          const accounts = await web3.eth.getAccounts();
+          if (accounts.length > 0) {
+            setAccount(accounts[0]);
+            setIsConnected(true);
+            await loadBlockchainData();
+          } else {
+            setLoading(false);
+          }
+        } catch (err) {
+          console.error(err);
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkConnection();
+
+    // Listen untuk perubahan akun
+    if (window.ethereum) {
+      window.ethereum.on("accountsChanged", (accounts) => {
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          setIsConnected(true);
+          loadBlockchainData();
+        } else {
+          setIsConnected(false);
+          setAccount("");
+        }
+      });
+
+      window.ethereum.on("chainChanged", () => {
+        window.location.reload();
+      });
+    }
   }, []);
 
   const loadBlockchainData = async () => {
@@ -103,7 +172,7 @@ const App = () => {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
       <div className="loading-container">
         <div className="loader"></div>
@@ -113,11 +182,16 @@ const App = () => {
         )}
       </div>
     );
+  }
+
+  if (!isConnected) {
+    return <Login onLogin={connectWallet} />;
+  }
 
   return (
     <div className="app-container">
       <header>
-        <h1>Aplikasi Voting Terdesentralisasi</h1>
+        <h1>Dapps Pemilu 2025</h1>
         <div className="account-info">
           <span>Alamat Wallet Anda:</span>
           <code>{account}</code>
