@@ -14,9 +14,14 @@ const App = () => {
   const [newCandidateName, setNewCandidateName] = useState("");
   const [transactionStatus, setTransactionStatus] = useState("");
   const [isConnected, setIsConnected] = useState(false);
+  const [isManuallyDisconnected, setIsManuallyDisconnected] = useState(false);
 
   const connectWallet = async () => {
     try {
+      // Hapus status disconnect
+      localStorage.removeItem("walletDisconnected");
+      setIsManuallyDisconnected(false);
+
       if (!window.ethereum) {
         throw new Error("MetaMask tidak terdeteksi! Silakan install MetaMask.");
       }
@@ -48,48 +53,88 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Cek status koneksi saat aplikasi dimuat
-    const checkConnection = async () => {
-      if (window.ethereum) {
-        try {
-          const web3 = new Web3(window.ethereum);
-          const accounts = await web3.eth.getAccounts();
-          if (accounts.length > 0) {
-            setAccount(accounts[0]);
-            setIsConnected(true);
-            await loadBlockchainData();
-          } else {
-            setLoading(false);
-          }
-        } catch (err) {
-          console.error(err);
-          setLoading(false);
-        }
-      } else {
+    const init = async () => {
+      // Cek apakah user sudah manual disconnect
+      const isDisconnected =
+        localStorage.getItem("walletDisconnected") === "true";
+
+      if (isDisconnected) {
+        setIsManuallyDisconnected(true);
+        setIsConnected(false);
         setLoading(false);
+        return; // Hentikan eksekusi jika user sudah disconnect
+      }
+
+      // Jika tidak disconnect, lanjutkan dengan pengecekan koneksi
+      if (!isManuallyDisconnected) {
+        await checkConnection();
       }
     };
 
-    checkConnection();
+    init();
 
-    // Listen untuk perubahan akun
+    // Event listeners untuk MetaMask
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length > 0) {
-          setAccount(accounts[0]);
-          setIsConnected(true);
-          loadBlockchainData();
-        } else {
-          setIsConnected(false);
-          setAccount("");
+        // Jika user sudah manual disconnect, abaikan perubahan akun
+        if (localStorage.getItem("walletDisconnected") === "true") {
+          return;
         }
+        handleAccountsChanged(accounts);
       });
 
       window.ethereum.on("chainChanged", () => {
+        // Jika user sudah manual disconnect, abaikan perubahan network
+        if (localStorage.getItem("walletDisconnected") === "true") {
+          return;
+        }
         window.location.reload();
       });
     }
-  }, []);
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener(
+          "accountsChanged",
+          handleAccountsChanged
+        );
+      }
+    };
+  }, [isManuallyDisconnected]);
+
+  const handleAccountsChanged = (accounts) => {
+    if (!isManuallyDisconnected) {
+      if (accounts.length > 0) {
+        setAccount(accounts[0]);
+        setIsConnected(true);
+        loadBlockchainData();
+      } else {
+        setIsConnected(false);
+        setAccount("");
+      }
+    }
+  };
+
+  const checkConnection = async () => {
+    if (window.ethereum) {
+      try {
+        const web3 = new Web3(window.ethereum);
+        const accounts = await web3.eth.getAccounts();
+        if (accounts.length > 0) {
+          setAccount(accounts[0]);
+          setIsConnected(true);
+          await loadBlockchainData();
+        } else {
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
+  };
 
   const loadBlockchainData = async () => {
     try {
@@ -172,13 +217,28 @@ const App = () => {
     }
   };
 
-  const disconnectWallet = () => {
-    setIsConnected(false);
-    setAccount("");
-    setContract(null);
-    setCandidates([]);
-    setTransactionStatus("");
-    setError("");
+  const disconnectWallet = async () => {
+    try {
+      // Set manual disconnect
+      setIsManuallyDisconnected(true);
+
+      // Reset semua state
+      setIsConnected(false);
+      setAccount("");
+      setContract(null);
+      setCandidates([]);
+      setTransactionStatus("");
+      setError("");
+
+      // Simpan status disconnect di localStorage
+      localStorage.setItem("walletDisconnected", "true");
+      localStorage.removeItem("userAccount");
+
+      // Force reload halaman untuk memastikan koneksi terputus
+      window.location.reload();
+    } catch (error) {
+      console.error("Error disconnecting:", error);
+    }
   };
 
   if (loading) {
@@ -193,7 +253,7 @@ const App = () => {
     );
   }
 
-  if (!isConnected) {
+  if (isManuallyDisconnected || !isConnected) {
     return <Login onLogin={connectWallet} />;
   }
 
