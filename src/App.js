@@ -172,6 +172,15 @@ const App = () => {
     }
   };
 
+  const disconnectWallet = () => {
+    setIsConnected(false);
+    setAccount("");
+    setContract(null);
+    setCandidates([]);
+    setTransactionStatus("");
+    setError("");
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -195,6 +204,10 @@ const App = () => {
         <div className="account-info">
           <span>Alamat Wallet Anda:</span>
           <code>{account}</code>
+          <br></br>
+          <button onClick={disconnectWallet} className="logout-button">
+            <span>LOGOUT</span>
+          </button>
         </div>
       </header>
 
