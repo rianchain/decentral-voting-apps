@@ -1,0 +1,7 @@
+# Instruksi untuk Aplikasi Voting Terdesentralisasi
+
+## Tujuan Proyek
+Aplikasi ini adalah aplikasi voting terdesentralisasi yang memungkinkan pengguna untuk memberikan suara pada kandidat tertentu. Aplikasi ini harus memiliki antarmuka pengguna yang menarik dan responsif, serta dapat berinteraksi dengan smart contract tanpa kesalahan.
+
+## Keinginan:
+ jadi saya ingin code yang sudah ada milik saya bisa berinteraksi dengan smart contract tanpa gagal tanpa error. dan memiliki front end yang menarik sesuai dengan konteks app yaitu decentralize voting app. fix code saya atau perbaiki jika ada kesalahan karena kode saya terakhir ini Eror di front end hanya Muncul Loading... tidak ada interaksi apa2 dan tidak ada front end apa2.
