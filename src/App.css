@@ -456,3 +456,48 @@ h1 {
     font-size: 1rem;
   }
 }
+
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-top: 0.8rem;
+}
+
+.logout-button:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+.logout-button span {
+  margin-left: 0.5rem;
+  color: black;
+}
+
+/* Dark mode support untuk logout button */
+@media (prefers-color-scheme: dark) {
+  .logout-button {
+    background: #c0392b;
+  }
+
+  .logout-button:hover {
+    background: #e74c3c;
+  }
+}
+
+/* Mobile responsive untuk logout button */
+@media screen and (max-width: 480px) {
+  .logout-button {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1rem;
+  }
+}
