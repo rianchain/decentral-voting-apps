@@ -11,13 +11,9 @@ contract Voting {
     mapping (uint256 => Candidate) public candidates;
     mapping (address => bool) public voters;
     uint256 public candidatesCount;
-    uint256 public votingEndTime;
 
     event votedEvent(uint256 indexed _candidateId);
 
-    constructor(uint256 _durationInHours) {
-        votingEndTime = block.timestamp + (_durationInHours * 1 hours);
-    }
 
     function addCandidate(string memory _name) public {
         candidatesCount++;
@@ -26,7 +22,6 @@ contract Voting {
 
     function vote(uint256 _candidateId) public {
         require(!voters[msg.sender], "You have already voted before!");
-        require(block.timestamp < votingEndTime, "Voting has ended!");
         require(_candidateId > 0 && _candidateId <= candidatesCount, "Invalid candidates ID!");
 
         voters[msg.sender] = true;
@@ -43,8 +38,4 @@ contract Voting {
         return candidateList;
     }
 
-
-    function hasVotingEnded() public view returns (bool) {
-        return block.timestamp >= votingEndTime;
-    }
 }
