@@ -52,13 +52,15 @@ h1 {
 
 .account-info code {
   background: #e9ecef;
-  padding: 0.2rem 0.5rem;
+  padding: 0.5rem;
   border-radius: 4px;
   font-family: monospace;
-  font-size: 0.9rem;
-  display: inline-block;
-  max-width: 100%;
-  overflow-x: auto;
+  font-size: 0.85rem;
+  width: 100%;
+  text-align: center;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  margin-bottom: 0.5rem;
 }
 
 /* Add Candidate Section */
@@ -166,7 +168,7 @@ h1 {
   border: none;
   padding: 0.8rem 1.5rem;
   border-radius: 6px;
-  cursor: pointer;
+  cursor: pointer !important;
   font-weight: 600;
   transition: background 0.2s;
   width: 100%;
@@ -499,5 +501,55 @@ h1 {
     width: 100%;
     padding: 0.8rem;
     margin-top: 1rem;
+  }
+}
+
+/* Mobile Responsive untuk account-info */
+@media screen and (max-width: 480px) {
+  .account-info {
+    width: 90%;
+    padding: 0.8rem;
+  }
+
+  .account-info code {
+    font-size: 0.75rem;
+    padding: 0.4rem;
+  }
+
+  .account-info span {
+    font-size: 0.85rem;
+  }
+
+  .logout-button {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Tablet Responsive */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .account-info {
+    width: 80%;
+  }
+
+  .account-info code {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark mode support untuk account info */
+@media (prefers-color-scheme: dark) {
+  .account-info {
+    background: #2c2c2c;
+  }
+
+  .account-info code {
+    background: #363636;
+    color: #f0f2f5;
+  }
+
+  .account-info span {
+    color: #b3b3b3;
   }
 }
