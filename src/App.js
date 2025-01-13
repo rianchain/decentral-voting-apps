@@ -125,12 +125,12 @@ const App = () => {
       </header>
 
       <main>
-        {error && (
+        {/* {error && (
           <div className="error-container">
             <h2>Error</h2>
             <p>{error}</p>
           </div>
-        )}
+        )} */}
 
         <div className="add-candidate-container">
           <h2>Tambah Kandidat Baru</h2>
