@@ -241,6 +241,24 @@ const App = () => {
     }
   };
 
+  const removeCandidate = async (index) => {
+    try {
+      setTransactionStatus("Menghapus kandidat...");
+      setLoading(true);
+      await contract.methods.removeCandidates(index).send({ from: account });
+      await loadBlockchainData();
+      setTransactionStatus("Kandidat berhasil dihapus!");
+    } catch (err) {
+      console.error("Error detail:", err);
+      setError(
+        "Gagal menghapus kandidat. Hanya owner yang dapat menghapus kandidat."
+      );
+      setTransactionStatus("Gagal menghapus kandidat.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -312,6 +330,13 @@ const App = () => {
             ) : (
               candidates.map((candidate) => (
                 <div key={candidate.id} className="candidate-card">
+                  <button
+                    onClick={() => removeCandidate(candidate.id)}
+                    className="remove-button"
+                    title="Hapus Kandidat"
+                  >
+                    ×
+                  </button>
                   <h3>{candidate.name}</h3>
                   <div className="vote-count">
                     <span>{candidate.voteCount}</span>
