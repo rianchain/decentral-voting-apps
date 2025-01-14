@@ -134,6 +134,7 @@ h1 {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  position: relative;
 }
 
 .candidate-card:hover {
@@ -551,5 +552,40 @@ h1 {
 
   .account-info span {
     color: #b3b3b3;
+  }
+}
+
+.remove-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  transition: background-color 0.2s;
+}
+
+.remove-button:hover {
+  background: #c0392b;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .remove-button {
+    background: #c0392b;
+  }
+
+  .remove-button:hover {
+    background: #e74c3c;
   }
 }
