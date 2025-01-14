@@ -8,6 +8,12 @@ contract Voting {
         uint256 voteCount;
     }
 
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
     mapping (uint256 => Candidate) public candidates;
     mapping (address => bool) public voters;
     uint256 public candidatesCount;
@@ -16,6 +22,7 @@ contract Voting {
 
 
     function addCandidate(string memory _name) public {
+        require(owner == msg.sender, "Only owner/admin can add candidates!" );
         candidatesCount++;
         candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
     }
@@ -36,6 +43,19 @@ contract Voting {
             candidateList[i - 1] = candidates[i];
         }
         return candidateList;
+    }
+
+    function removeCandidates(uint256 index) public onlyOwner {
+        require(index > 0 && index <= candidatesCount, "Invalid candidates index!");
+        candidates[index] = candidates[candidatesCount];
+
+        delete candidates[candidatesCount];
+        candidatesCount--;
+    }
+
+    modifier onlyOwner() {
+        require (msg.sender == owner, "Only owner can perform this action!");
+    _;
     }
 
 }
