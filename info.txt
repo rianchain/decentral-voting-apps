@@ -1,2 +1,3 @@
 Voting deployed address (old): 0x36f9a95302888321134d600124E615c40b637161
-Voting deployed address (new): 0x4177E7fF7615FD71f40e839206365931423c9427
+Voting deployed address (old): 0x4177E7fF7615FD71f40e839206365931423c9427
+Voting deployed address (new/current): 0xFA4cDa50D310f34a1f67ADcA3747d00767a33aaC
