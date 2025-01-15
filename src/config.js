@@ -1,2 +1,2 @@
-export const CONTRACT_ADDRESS = "0x4177E7fF7615FD71f40e839206365931423c9427";
+export const CONTRACT_ADDRESS = "0xFA4cDa50D310f34a1f67ADcA3747d00767a33aaC";
 export const NETWORK_ID = "11155420"; // Sesuaikan dengan jaringan yang Anda gunakan
