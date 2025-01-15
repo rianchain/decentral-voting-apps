@@ -1,6 +1,59 @@
-# Getting Started with Create React App
+# VoteChain3 Pemilu
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+VoteChain3 is a decentralized voting application built on the Layer 2 Ethereum blockchain Optimism. The app allows users to vote for candidates in a secure and transparent manner. By using blockchain technology, VoteChain3 ensures that every vote is transparently recorded and cannot be manipulated, thus increasing trust in the voting process.
+
+
+## Features
+
+- Decentralized Voting: Users can vote without intermediaries, ensuring transparency and security.
+
+- Candidate Registration: Only the contract owner can add new candidates for the election.
+
+- Multiple Vote Prevention: Each address can only vote once to prevent cheating.
+
+- Vote Report: Users can view voting results in real-time.
+
+- User Friendly Interface: Responsive and easy-to-use interface for all users.
+
+## Advantages
+
+- Decentralization: No third party controls your data.
+
+- Security: Your data is stored on the blockchain, which offers a high level of security.
+
+- User-Friendly: Simple and easy-to-use interface.
+
+- Low Transaction Fees: Uses the Optimism Sepolia network 
+which offers lower transaction fees compared to the main Ethereum network.
+
+
+### How to use VoteChain3
+
+- Install MetaMask: Make sure you have installed the MetaMask wallet in your browser.
+
+- Change Network to Optimism Sepolia:
+Open MetaMask and select a network.
+
+- Add the Optimism Sepolia network if it doesn't already exist.
+
+- Access VoteChain3: Visit the https://votechain3.vercel.app app in your browser.
+
+- Connect Wallet: Click the “Hubungkan Dengan Metamask” button and select MetaMask.
+
+
+## Contributions
+
+We highly value contributions from the community. If you would like to contribute to this project, please fork this repository and submit a pull request with your changes.
+
+## License
+
+This project is licensed under the MIT License.
+
+
+
+
+
+
 
 ## Available Scripts
 
@@ -39,32 +92,10 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
 
-### `npm run build` fails to minify
+### `npm run build` 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
