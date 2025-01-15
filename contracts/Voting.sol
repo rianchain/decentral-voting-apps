@@ -9,6 +9,7 @@ contract Voting {
     }
 
     address public owner;
+    address[] voterList;
 
     constructor() {
         owner = msg.sender;
@@ -33,6 +34,7 @@ contract Voting {
 
         voters[msg.sender] = true;
         candidates[_candidateId].voteCount++;
+        voterList.push(msg.sender);
 
         emit votedEvent(_candidateId);
     }
@@ -48,6 +50,10 @@ contract Voting {
     function removeCandidates(uint256 index) public onlyOwner {
         require(index > 0 && index <= candidatesCount, "Invalid candidates index!");
         candidates[index] = candidates[candidatesCount];
+
+        for (uint256 i = 0; i < voterList.length; i++) {
+            voters[voterList[i]] = false;
+        }
 
         delete candidates[candidatesCount];
         candidatesCount--;
