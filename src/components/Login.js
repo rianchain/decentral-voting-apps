@@ -6,7 +6,7 @@ const Login = ({ onLogin }) => {
     <div className="login-container">
       <div className="login-card">
         {/* <h1>Selamat Datang di :</h1> */}
-        <h2>VoteChain3 Pemilu</h2>
+        <h2>VoteChain3 (beta)</h2>
         <p>
           Selamat Datang 😉 Silakan hubungkan wallet MetaMask Anda untuk
           melanjutkan
