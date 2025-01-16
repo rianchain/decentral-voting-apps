@@ -278,7 +278,7 @@ const App = () => {
   return (
     <div className="app-container">
       <header>
-        <h1>VoteChain (demo)</h1>
+        <h1>VoteChain3(demo)</h1>
         <div className="account-info">
           <span>Alamat Wallet Anda:</span>
           <code>{account}</code>
