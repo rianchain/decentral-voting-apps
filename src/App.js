@@ -4,6 +4,8 @@ import { VotingContractABI } from "./abis/VotingContract";
 import "./App.css";
 import { CONTRACT_ADDRESS, NETWORK_ID } from "./config";
 import Login from "./components/Login";
+import ImageUpload from "./components/ImageUpload";
+import axios from "axios";
 
 const App = () => {
   const [account, setAccount] = useState("");
@@ -15,6 +17,12 @@ const App = () => {
   const [transactionStatus, setTransactionStatus] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isManuallyDisconnected, setIsManuallyDisconnected] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [isOwner, setIsOwner] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState(""); // success, error, info
 
   const connectWallet = async () => {
     try {
@@ -159,15 +167,25 @@ const App = () => {
       );
       setContract(instance);
 
+      // Cek apakah akun yang terkoneksi adalah owner
+      const ownerAddress = await instance.methods.owner().call();
+      setIsOwner(accounts[0].toLowerCase() === ownerAddress.toLowerCase());
+
       // Ambil daftar kandidat
       const candidatesList = await instance.methods.getCandidates().call();
       const formattedCandidates = candidatesList.map((candidate, index) => ({
         id: index + 1,
         name: candidate.name || candidate[1],
         voteCount: parseInt(candidate.voteCount || candidate[2]),
+        imageUrl: candidate.imageUrl || candidate[3],
       }));
 
       setCandidates(formattedCandidates);
+
+      // Cek status voting untuk akun yang terkoneksi
+      const hasVotedStatus = await instance.methods.voters(accounts[0]).call();
+      setHasVoted(hasVotedStatus);
+
       setLoading(false);
     } catch (err) {
       console.error("Error:", err);
@@ -178,17 +196,23 @@ const App = () => {
 
   const addCandidate = async () => {
     try {
+      if (!selectedImage) {
+        setError("Silakan upload foto kandidat terlebih dahulu");
+        return;
+      }
+
       setTransactionStatus("Menambahkan kandidat...");
       setLoading(true);
       await contract.methods
-        .addCandidate(newCandidateName)
+        .addCandidate(newCandidateName, selectedImage)
         .send({ from: account });
+
       setNewCandidateName("");
+      setSelectedImage("");
       await loadBlockchainData();
-      setTransactionStatus("Kandidat berhasil ditambahkan!");
+      showToastMessage("Kandidat berhasil ditambahkan!");
     } catch (err) {
-      setError(err.message);
-      setTransactionStatus("Gagal menambahkan kandidat.");
+      showToastMessage(err.message, "error");
     } finally {
       setLoading(false);
     }
@@ -198,20 +222,21 @@ const App = () => {
     try {
       setTransactionStatus("Memproses vote...");
       setLoading(true);
+
       await contract.methods.vote(candidateId).send({ from: account });
       await loadBlockchainData();
-      setTransactionStatus("Vote berhasil!");
+
+      showToastMessage("Vote berhasil tercatat!");
+      setHasVoted(true);
     } catch (err) {
       console.error("Error detail:", err);
-      // Cek pesan error dari smart contract
       if (err.message.includes("You have already voted before")) {
-        setError("Anda sudah melakukan voting sebelumnya!");
+        showToastMessage("Anda sudah melakukan voting sebelumnya!", "error");
       } else if (err.message.includes("Invalid candidates ID")) {
-        setError("ID kandidat tidak valid!");
+        showToastMessage("ID kandidat tidak valid!", "error");
       } else {
-        setError("Gagal melakukan voting. Silakan coba lagi.");
+        showToastMessage("Gagal melakukan voting. Silakan coba lagi.", "error");
       }
-      setTransactionStatus("Gagal melakukan vote.");
     } finally {
       setLoading(false);
     }
@@ -245,18 +270,31 @@ const App = () => {
     try {
       setTransactionStatus("Menghapus kandidat...");
       setLoading(true);
+
+      // Hanya hapus dari blockchain
       await contract.methods.removeCandidates(index).send({ from: account });
+
+      // Refresh data
       await loadBlockchainData();
-      setTransactionStatus("Kandidat berhasil dihapus!");
+      showToastMessage("Kandidat berhasil dihapus!");
     } catch (err) {
-      console.error("Error detail:", err);
-      setError(
-        "Gagal menghapus kandidat. Hanya owner yang dapat menghapus kandidat."
+      showToastMessage(
+        "Gagal menghapus kandidat. Hanya owner yang dapat menghapus kandidat.",
+        "error"
       );
-      setTransactionStatus("Gagal menghapus kandidat.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fungsi untuk menampilkan toast
+  const showToastMessage = (message, type = "success") => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
   };
 
   if (loading) {
@@ -282,7 +320,7 @@ const App = () => {
         <div className="account-info">
           <span>Alamat Wallet Anda:</span>
           <code>{account}</code>
-          <br></br>
+          <span className="role-badge">{isOwner ? "Admin" : "Voter"}</span>
           <button onClick={disconnectWallet} className="logout-button">
             <span>LOGOUT</span>
           </button>
@@ -297,31 +335,37 @@ const App = () => {
           </div>
         )} */}
 
-        <div className="add-candidate-container">
-          <h2>Tambah Kandidat Baru</h2>
-          <div className="add-candidate-form">
-            <input
-              type="text"
-              value={newCandidateName}
-              onChange={(e) => setNewCandidateName(e.target.value)}
-              placeholder="Nama Kandidat"
-              className="candidate-input"
-            />
-            <button
-              onClick={addCandidate}
-              className="add-button"
-              disabled={!newCandidateName.trim()}
-            >
-              Tambah Kandidat
-            </button>
+        {isOwner && (
+          <div className="add-candidate-container">
+            <h2>Tambah Kandidat Baru</h2>
+            <div className="add-candidate-form">
+              <input
+                type="text"
+                value={newCandidateName}
+                onChange={(e) => setNewCandidateName(e.target.value)}
+                placeholder="Nama Kandidat"
+                className="candidate-input"
+              />
+              <ImageUpload
+                onImageUpload={(url) => setSelectedImage(url)}
+                onError={setError}
+              />
+              <button
+                onClick={addCandidate}
+                className="add-button"
+                disabled={!newCandidateName.trim() || !selectedImage}
+              >
+                Tambah Kandidat
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="candidates-container">
           <h2>Daftar Kandidat</h2>
-          {transactionStatus && (
+          {/* {transactionStatus && (
             <div className="transaction-status-banner">{transactionStatus}</div>
-          )}
+          )} */}
           <div className="candidates-grid">
             {candidates.length === 0 ? (
               <p className="no-candidates">
@@ -330,30 +374,54 @@ const App = () => {
             ) : (
               candidates.map((candidate) => (
                 <div key={candidate.id} className="candidate-card">
-                  <button
-                    onClick={() => removeCandidate(candidate.id)}
-                    className="remove-button"
-                    title="Hapus Kandidat"
-                  >
-                    ×
-                  </button>
-                  <h3>{candidate.name}</h3>
-                  <div className="vote-count">
-                    <span>{candidate.voteCount}</span>
-                    <small>suara</small>
+                  {isOwner && (
+                    <button
+                      onClick={() => removeCandidate(candidate.id)}
+                      className="remove-button"
+                      title="Hapus Kandidat"
+                    >
+                      ×
+                    </button>
+                  )}
+                  {candidate.imageUrl && (
+                    <img
+                      src={candidate.imageUrl}
+                      alt={candidate.name}
+                      className="candidate-image"
+                    />
+                  )}
+                  <div className="candidate-info">
+                    <h3>{candidate.name}</h3>
+                    <div className="vote-count">
+                      <span>{candidate.voteCount}</span>
+                      <small>suara</small>
+                    </div>
+                    {!isOwner && !hasVoted && (
+                      <button
+                        onClick={() => vote(candidate.id)}
+                        className="vote-button"
+                        disabled={hasVoted}
+                      >
+                        {hasVoted ? "Anda Sudah Memilih" : "Pilih Kandidat"}
+                      </button>
+                    )}
                   </div>
-                  <button
-                    onClick={() => vote(candidate.id)}
-                    className="vote-button"
-                  >
-                    Pilih Kandidat
-                  </button>
                 </div>
               ))
             )}
           </div>
         </div>
       </main>
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className={`toast-notification ${toastType}`}>
+          {toastMessage}
+          <button className="toast-close" onClick={() => setShowToast(false)}>
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 };
