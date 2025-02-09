@@ -8,6 +8,19 @@ export const VotingContractABI = [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "string",
+        name: "imageUrl",
+        type: "string",
+      },
+    ],
+    name: "CandidateRemoved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "uint256",
         name: "_candidateId",
@@ -22,6 +35,11 @@ export const VotingContractABI = [
       {
         internalType: "string",
         name: "_name",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "_imageUrl",
         type: "string",
       },
     ],
@@ -54,6 +72,11 @@ export const VotingContractABI = [
         internalType: "uint256",
         name: "voteCount",
         type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "imageUrl",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -92,6 +115,11 @@ export const VotingContractABI = [
             internalType: "uint256",
             name: "voteCount",
             type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "imageUrl",
+            type: "string",
           },
         ],
         internalType: "struct Voting.Candidate[]",
