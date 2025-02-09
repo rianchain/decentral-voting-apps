@@ -6,6 +6,7 @@ contract Voting {
         uint256 id;
         string name;
         uint256 voteCount;
+        string imageUrl;
     }
 
     address public owner;
@@ -20,12 +21,13 @@ contract Voting {
     uint256 public candidatesCount;
 
     event votedEvent(uint256 indexed _candidateId);
+    event CandidateRemoved(string imageUrl);
 
 
-    function addCandidate(string memory _name) public {
+    function addCandidate(string memory _name, string memory _imageUrl) public {
         require(owner == msg.sender, "Only owner/admin can add candidates!" );
         candidatesCount++;
-        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0, _imageUrl);
     }
 
     function vote(uint256 _candidateId) public {
@@ -49,6 +51,9 @@ contract Voting {
 
     function removeCandidates(uint256 index) public onlyOwner {
         require(index > 0 && index <= candidatesCount, "Invalid candidates index!");
+        
+        string memory imageToDelete = candidates[index].imageUrl;
+        
         candidates[index] = candidates[candidatesCount];
 
         for (uint256 i = 0; i < voterList.length; i++) {
@@ -57,6 +62,8 @@ contract Voting {
 
         delete candidates[candidatesCount];
         candidatesCount--;
+
+        emit CandidateRemoved(imageToDelete);
     }
 
     modifier onlyOwner() {
